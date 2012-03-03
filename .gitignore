@@ -1,0 +1,8 @@
+*.pyc
+*~
+/settings.py
+.Python
+bin/
+include/
+lib/python2.7/
+src/allparty/basemodel.py
