@@ -8,6 +8,8 @@ class PerlinNoiseMap(object):
         self.p = []
         self.map = []
         self.sample_map = []
+        self.tilekey_map = []
+        
         self.size = size
         self.tiledim = tiledim
         self.tilew = tilew
@@ -46,11 +48,48 @@ class PerlinNoiseMap(object):
             y_map = []
             for y in xrange(self.tileh):
                 sample = self.map[x*sample_x][y*sample_y]
-                if sample <= 0.475:
+                if sample <= 0.4825:
                     y_map.append(0)
                 else:
                     y_map.append(1)
             self.sample_map.append(y_map)
+
+    def _determine_tile_type(self, x, y, tile_dir):
+        if x == 0 or y == 0 or x == len(self.sample_map)-1 or y == len(self.sample_map[x])-1:
+            return 0
+        else:
+            if tile_dir == 'NW': return self.sample_map[x-1+y%2][y-1]
+            if tile_dir == 'NE': return self.sample_map[x+y%2][y-1]
+            if tile_dir == 'SE': return self.sample_map[x+y%2][y+1]
+            if tile_dir == 'SW': return self.sample_map[x-1+y%2][y+1]
+
+    def create_tilekey_map(self):
+        for x in xrange(self.tilew):
+            y_map = []
+            for y in xrange(self.tileh):
+                tile_key = ''
+                if self.sample_map[x][y] == 0:
+                    tile_key += 'OCEAN_'
+                    
+                    tile_NW = self._determine_tile_type(x, y, 'NW')
+                    tile_NE = self._determine_tile_type(x, y, 'NE')
+                    tile_SE = self._determine_tile_type(x, y, 'SE')
+                    tile_SW = self._determine_tile_type(x, y, 'SW')
+                    tile_list = [tile_NW, tile_NE, tile_SE, tile_SW]
+
+                    tile_code = ''
+                    for i, t in enumerate(tile_list):
+                        if t > 0:
+                            tile_code += '%s' % str(i+1)
+                    if tile_code == '':
+                        tile_key += 'NONE_1'
+                    else:
+                        tile_key += 'BANK_%s' % tile_code
+                else:
+                    tile_key = 'GRASS_NONE_1'
+
+                y_map.append(tile_key)
+            self.tilekey_map.append(y_map)
 
     
 class PerlinNoiseFactory(object):
@@ -165,6 +204,7 @@ class PerlinNoiseFactory(object):
                 pnm.map[x][y] = color
         
         pnm.create_sample_map()
+        pnm.create_tilekey_map()
 
         return pnm
 
