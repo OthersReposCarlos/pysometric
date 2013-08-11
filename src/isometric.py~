@@ -1,0 +1,47 @@
+import pygame
+import random
+import sys
+
+from pygame.locals import * 
+
+from pysometric import settings
+from pysometric.lib.tile import TileTable, TileMap
+ 
+pygame.init() 
+ 
+window = pygame.display.set_mode((800, 600)) 
+pygame.display.set_caption('PySometric') 
+screen = pygame.display.get_surface() 
+            
+ 
+def input(events): 
+   for event in events: 
+      if event.type == QUIT: 
+         sys.exit(0) 
+      elif event.type == KEYDOWN and event.key == K_UP:
+          camera_offset[1] += 32
+          tm.drawMap(camera_offset, screen, tt.tiledict)
+      elif event.type == KEYDOWN and event.key == K_DOWN:
+          camera_offset[1] -= 32
+          tm.drawMap(camera_offset, screen, tt.tiledict)
+      elif event.type == KEYDOWN and event.key == K_LEFT:
+          camera_offset[0] += 64
+          tm.drawMap(camera_offset, screen, tt.tiledict)
+      elif event.type == KEYDOWN and event.key == K_RIGHT:
+          camera_offset[0] -= 64
+          tm.drawMap(camera_offset, screen, tt.tiledict)
+      else: 
+         print event 
+
+camera_offset = [-128, -128]
+
+tt = TileTable(settings.TILESET_FILE_NAME)
+tm = TileMap(30, 60) 
+
+tm.drawMap(camera_offset, screen, tt.tiledict)
+clock = pygame.time.Clock()
+
+while True: 
+    clock.tick(60)
+    input(pygame.event.get())
+    pygame.display.flip()
