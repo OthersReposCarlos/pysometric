@@ -48,7 +48,3 @@ while True:
     clock.tick(60)
     input(pygame.event.get())
     pygame.display.flip()
-
-
-
-
