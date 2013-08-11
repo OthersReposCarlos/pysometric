@@ -1,6 +1,0 @@
-class Camera(object):
-    """Stores information about the camera, its offsets
-    and maximum constraints."""
-    
-    def __init__(self, x_offset, y_offset):
-        self.offset = [x_offset, y_offset]
