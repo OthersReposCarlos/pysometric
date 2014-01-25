@@ -80,7 +80,9 @@ class IsometricMap(object):
 
     def create_altitude_map(self):
         """Creates the altitude data structure."""
-        pnf = PerlinNoiseFactory(settings.PNF_MAP_SIZE, settings.PNF_TILEDIM, settings.PNF_REPEATS)
+        pnf = PerlinNoiseFactory(size=settings.PNF_MAP_SIZE, 
+                                 tiledim=settings.PNF_TILEDIM, 
+                                 repeats=settings.PNF_REPEATS)
         pnm = pnf._generate_map()
 
         altitudes = []
@@ -117,18 +119,27 @@ class IsometricMap(object):
                              self.altitudes[x+1][y+1], self.altitudes[x+1][y])
         return alts
 
-    def draw_map(self, screen, tiledict, frame, camera_offset=[0,0]):
-        """Draw the isometric map based on the tile blocks,
-        with a camera offset."""
-        screen.fill([0,0,0])
+    def generate_background(self, tiledict):
+        """Generate the whole background image at once, so as not
+        to continually call "blit" all the time!"""
+        sw = self.width*settings.TILEWIDTH
+        sh = self.height*settings.TILEHEIGHT
+        image = pygame.Surface((sw+16, sh+16))
         for i in range(0, self.width):
             for j in range(0, self.height):
                 td = tiledict['1111']
-                screen.blit(td[0],
-                            (-i*32 + j*32 + td[1][0] + (settings.SCREEN_RESOLUTION[0]/2) + camera_offset[0], 
-                              i*16 + j*16 + td[1][1] + (settings.SCREEN_RESOLUTION[1]/2) + camera_offset[1]))
-                
+                image.blit(td[0], (-i*32 + j*32 + td[1][0] + sw/2, i*16 + j*16 + td[1][1]+8))               
                 td = tiledict[self.obtain_tile_slope(i, j)]
-                screen.blit(td[0],
-                            (-i*32 + j*32 + td[1][0] + (settings.SCREEN_RESOLUTION[0]/2) + camera_offset[0], 
-                              i*16 + j*16 + td[1][1] + (settings.SCREEN_RESOLUTION[1]/2) + camera_offset[1]))
+                image.blit(td[0], (-i*32 + j*32 + td[1][0] + sw/2, i*16 + j*16 + td[1][1]+8))
+        return image
+
+    def draw_map(self, screen, tile_bg, camera_offset=[0,0]):
+        """Draw the isometric map based on the tile blocks,
+        with a camera offset."""
+        sw = self.width*settings.TILEWIDTH
+        sh = self.height*settings.TILEHEIGHT
+        res = settings.SCREEN_RESOLUTION
+        screen.fill([0,0,0])
+        screen.blit(tile_bg, (camera_offset[0], camera_offset[1]))
+
+

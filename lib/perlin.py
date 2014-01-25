@@ -4,7 +4,7 @@ import random
 class PerlinNoiseMap(object):
     """Stores the Perlin Noise map from which to sample."""
     
-    def __init__(self, size=128, tiledim=16, tilew=16, tileh=16):
+    def __init__(self, size=128, tiledim=64, tilew=32, tileh=32):
         self.p = []
         self.map = []
         self.sample_map = []

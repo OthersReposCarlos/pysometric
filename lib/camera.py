@@ -37,16 +37,16 @@ class Camera(object):
             self.offset[0] = self.max_offsets['W']
 
     def calc_north_offset_max(self):
-        return 0
+        return settings.SCREEN_RESOLUTION[1]/2
 
     def calc_east_offset_max(self):
-        return -1.0 * (self.map_width/2) * (settings.TILEWIDTH)
+        return -1.0*self.map_width * (settings.TILEWIDTH) + settings.SCREEN_RESOLUTION[0]/2
 
     def calc_south_offset_max(self):
-        return -1.0 * self.map_width * (settings.TILEHEIGHT/2)
+        return -1.0*self.map_height * (settings.TILEHEIGHT) + settings.SCREEN_RESOLUTION[1]/2
 
     def calc_west_offset_max(self):
-        return 1.0 * (self.map_width/2) * (settings.TILEWIDTH)
+        return settings.SCREEN_RESOLUTION[0]/2
     
         
 
