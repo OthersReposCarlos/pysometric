@@ -4,7 +4,8 @@ import random
 class PerlinNoiseMap(object):
     """Stores the Perlin Noise map from which to sample."""
     
-    def __init__(self, size=128, tiledim=64, tilew=32, tileh=32):
+    def __init__(self, size, tiledim, tilew, tileh):
+        print "PNM: size, tiledim, tilew, tileh: %s, %s, %s, %s" % (size, tiledim, tilew, tileh)
         self.p = []
         self.map = []
         self.sample_map = []
@@ -47,9 +48,18 @@ class PerlinNoiseMap(object):
         for x in xrange(self.tilew):
             y_map = []
             for y in xrange(self.tileh):
-                sample = self.map[x*sample_x][y*sample_y]
-                if sample < 0.475:
+                sample = self.map[x*sample_x][y*sample_y]                
+
+                if sample < 0.4:
                     y_map.append(1)
+                elif sample >= 0.4 and sample < 0.45:
+                    y_map.append(1)
+                elif sample >= 0.45 and sample < 0.5:
+                    y_map.append(1)
+                elif sample >= 0.5 and sample < 0.55:
+                    y_map.append(2)
+                elif sample >= 0.55 and sample < 0.6:
+                    y_map.append(2)
                 else:
                     y_map.append(2)
             self.sample_map.append(y_map)
@@ -95,7 +105,9 @@ class PerlinNoiseMap(object):
 class PerlinNoiseFactory(object):
     """Creates a PerlinNoiseMap object."""
 
-    def __init__(self, size=128, tiledim=16, repeats=1):
+    def __init__(self, size, tiledim, repeats):
+        print "PNF: size, tiledim, repeats: %s, %s, %s" % (size, tiledim, repeats)
+
         self.size = size
         self.tiledim = tiledim   #In nodes
         self.repeats = repeats    #number of repetitions on screen
@@ -172,7 +184,7 @@ class PerlinNoiseFactory(object):
                                                 self._grad(p[BB+1],x-1,y-1,z-1))))    
 
     def _generate_map(self):
-        pnm = PerlinNoiseMap(self.size, self.tiledim)
+        pnm = PerlinNoiseMap(self.size, self.tiledim, self.size, self.size)
 
         octaves = 8
         persistence = 0.8

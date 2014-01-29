@@ -5,7 +5,10 @@ class Camera(object):
     and maximum constraints."""
     
     def __init__(self):
-        self.offset = [0, 0]
+        x_off = 0#settings.MAP_WIDTH * settings.TILEWIDTH / 2
+        y_off = 0#settings.MAP_HEIGHT * settings.TILEHEIGHT / 2
+
+        self.offset = [x_off, y_off]
         self.map_width = settings.MAP_WIDTH
         self.map_height = settings.MAP_HEIGHT
 

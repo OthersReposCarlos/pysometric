@@ -91,13 +91,14 @@ class IsometricMap(object):
             for j in range(0, self.height + 1):
                 tile_row.append(1)  
             altitudes.append(tile_row)
-
+        
+        # Temporary to test multiple levels
         for i in range(0, self.width):
             for j in range(0, self.height):
                 try:
                     altitudes[i][j] = pnm.sample_map[i][j]
                 except:
-                    pass
+                    pass      
 
         return altitudes
 
@@ -115,9 +116,12 @@ class IsometricMap(object):
     def obtain_tile_slope(self, x, y):
         """Obtains the correct tile slope key to use in
         the tile graphics image set."""
-        alts = "%s%s%s%s" % (self.altitudes[x][y], self.altitudes[x][y+1],
-                             self.altitudes[x+1][y+1], self.altitudes[x+1][y])
-        return alts
+        alt_tup = (self.altitudes[x][y], self.altitudes[x][y+1],
+                   self.altitudes[x+1][y+1], self.altitudes[x+1][y])
+
+        alts = "%s%s%s%s" % alt_tup
+        min_alt = 1
+        return alts, min_alt
 
     def generate_background(self, tiledict):
         """Generate the whole background image at once, so as not
@@ -127,10 +131,18 @@ class IsometricMap(object):
         image = pygame.Surface((sw+16, sh+16))
         for i in range(0, self.width):
             for j in range(0, self.height):
+                alts, min_level = self.obtain_tile_slope(i, j)
+
+                # Draw lowest level if necessary to fill in blank tile space               
                 td = tiledict['1111']
-                image.blit(td[0], (-i*32 + j*32 + td[1][0] + sw/2, i*16 + j*16 + td[1][1]+8))               
-                td = tiledict[self.obtain_tile_slope(i, j)]
-                image.blit(td[0], (-i*32 + j*32 + td[1][0] + sw/2, i*16 + j*16 + td[1][1]+8))
+                if alts == '1121':
+                    image.blit(td[0], (-i*32 + j*32 + td[1][0] + sw/2, i*16 + j*16 + td[1][1]+8))
+                    # -8*(min_level-1)))               
+                
+                # Draw upper levels
+                td = tiledict[alts]               
+                image.blit(td[0], (-i*32 + j*32 + td[1][0] + sw/2, i*16 + j*16 + td[1][1]+ 8))
+                # - 8*(min_level-1)))
         return image
 
     def draw_map(self, screen, tile_bg, camera_offset=[0,0]):
