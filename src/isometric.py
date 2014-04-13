@@ -7,6 +7,7 @@ from pygame.locals import *
 from pysometric import settings
 from pysometric.lib.tile import TileTable, TileBlock, IsometricMap
 from pysometric.lib.camera import Camera
+from pysometric.lib.menu import create_main_menu
 
 pygame.init() 
  
@@ -20,6 +21,16 @@ def input(events):
          sys.exit(0) 
       elif event.type == KEYDOWN and event.key == K_ESCAPE:
          sys.exit(0)
+      elif event.type == KEYDOWN and event.key == K_a:
+         if menu.menu_items[0].clicked == True:
+            menu.menu_items[0].clicked = False
+         else:
+            menu.menu_items[0].clicked = True
+      elif event.type == KEYDOWN and event.key == K_b:
+         if menu.menu_items[1].clicked == True:
+            menu.menu_items[1].clicked = False
+         else:
+            menu.menu_items[1].clicked = True
       elif event.type == MOUSEMOTION:# and event.button == RIGHT:
          if pygame.mouse.get_pressed() == (0,0,1):
             cam.set_offset(event.rel)
@@ -38,6 +49,7 @@ def input(events):
           tm.draw_map(screen, tile_bg, cam.offset)
 
 cam = Camera()
+menu = create_main_menu()
 
 tt = TileTable()
 tm = IsometricMap(settings.MAP_WIDTH, settings.MAP_HEIGHT) 
@@ -45,10 +57,12 @@ tile_bg = tm.generate_background(tt.tiledict)
 
 frame = 0
 tm.draw_map(screen, tile_bg, cam.offset)
+menu.draw_menu(screen)
 clock = pygame.time.Clock()
 
 while True: 
     clock.tick(60)
     input(pygame.event.get())
+    menu.draw_menu(screen)
     pygame.display.flip()
 
